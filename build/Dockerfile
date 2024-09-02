@@ -7,8 +7,7 @@ WORKDIR /app
 
 ENV API_PORT=3000
 ENV DEBUG_LOG=false
-ENV API_TOKEN=test-token
-ENV DATABASE_URL=postgres@localhost:5432/postgres
+ENV DATABASE_URL=postgresql://postgres:password@postgresql:5432
 
 EXPOSE $API_PORT
 
@@ -16,10 +15,9 @@ EXPOSE $API_PORT
 COPY . .
 RUN rm -rf node_modules
 RUN npm install
-RUN npm run test
 RUN npm run build
 
-ENTRYPOINT ["./entrypoint.sh"]
+ENTRYPOINT ["./build/entrypoint.sh"]
 
 # DEBUG
 # ENTRYPOINT ["sleep", "infinity"]

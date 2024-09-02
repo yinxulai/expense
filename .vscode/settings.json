@@ -1,8 +1,11 @@
 {
   "cSpell.words": [
     "datasource",
+    "euxo",
     "fastify",
-    "mailparser",
-    "Stmp"
+    "healthz",
+    "pipefail",
+    "taicode",
+    "Totp"
   ]
 }

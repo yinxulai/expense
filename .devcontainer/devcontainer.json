@@ -1,0 +1,24 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+{
+	"name": "taicode/expense",
+	"service": "workspace",
+	"dockerComposeFile": "docker-compose.yml",
+	"workspaceFolder": "/workspace",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-azuretools.vscode-docker",
+				"Orta.vscode-jest",
+				"CodeInChinese.EnglishChineseDictionary",
+				"streetsidesoftware.code-spell-checker",
+				"dbaeumer.vscode-eslint",
+				"Prisma.prisma",
+				"ckolkman.vscode-postgres",
+				"rangav.vscode-thunder-client"
+			],
+			"settings": {
+				"vscode-postgres.defaultConnection": "postgresql://postgres:password@postgresql:5432/postgres"
+			}
+		}
+	},
+}

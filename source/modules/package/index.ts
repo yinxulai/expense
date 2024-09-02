@@ -5,3 +5,6 @@
 // 规则无法删除和修改
 // 规则与用户有绑定关系
 // 规则存在生效、失效日期（必须以天为单位）
+
+export { createUserRouter } from './router'
+export { UserService, createUserService } from './service'

@@ -13,6 +13,37 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Example {
+model ChargeData {
   id          String   @id @default(uuid())
+  key         String
+  value       Int
+  createdTime DateTime @default(now())
+}
+
+model ChargeProject {
+  id          String    @id @default(uuid())
+  key         String
+  price       Int
+  createdTime DateTime  @default(now())
+  updatedTime DateTime  @default(now()) @updatedAt
+  deletedTime DateTime?
+}
+
+enum BillType {
+  Checkout // 结账账单
+  RealTime // 实时账单
+}
+
+model Bill {
+  id         String   @id @default(uuid())
+  type       BillType
+  endTime    DateTime // 结束实现
+  startTime  DateTime // 开始时间
+  totalCost  Int // 总费用
+  actualCost Int // 实际费用（计算套餐和折扣之后）
+
+  createdTime DateTime  @default(now())
+  updatedTime DateTime  @default(now()) @updatedAt
+  deletedTime DateTime?
+  signature   String // 整条数据的签名
 }

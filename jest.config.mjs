@@ -1,4 +1,7 @@
-module.exports = {
+import tsConfig from './tsconfig.json' with { type: 'json' }
+import { pathsToModuleNameMapper } from 'ts-jest'
+
+export default {
   // 指定根目录
   roots: ['<rootDir>/source'],
 
@@ -13,9 +16,12 @@ module.exports = {
     '^.+\\.(js)$': 'babel-jest'
   },
 
+  modulePaths: ['<rootDir>/source'],
+  moduleNameMapper: pathsToModuleNameMapper(tsConfig.compilerOptions.paths),
+
   // 配置测试覆盖率报告
   collectCoverage: true,
-  coverageDirectory: 'coverage',
+  coverageDirectory: '.coverage',
   coverageReporters: ['json', 'lcov', 'text', 'clover'],
 
   // 自动清理模拟对象

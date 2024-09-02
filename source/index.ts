@@ -1,17 +1,33 @@
 import Fastify from 'fastify'
 
-import pkg from '../package.json'
+import fastifyCookie from '@fastify/cookie'
+import { PrismaClient } from '@prisma/client'
 
-console.log("Version:", pkg.version)
+import { config } from '@helpers/config'
+import { createReplyHandler } from '@plugins/reply'
+import { createHealthRouter } from '@modules/health'
+import { createUserRouter, createUserService } from '@modules/user'
+import { createSecretService, createSecretRouter } from '@modules/secret'
+import { validatorCompiler, serializerCompiler } from 'fastify-type-provider-zod'
 
-const apiPort = process.env.API_PORT
-const debugLog = process.env.DEBUG_LOG
-const fastify = Fastify({ logger: debugLog == 'true' })
+console.log(`version: ${config.version}`)
 
-fastify.get('/', async function handler(request, reply) {
-  return { hello: 'world' }
-})
+const fastify = Fastify({ logger: config.debugLog })
+const db = new PrismaClient({ datasourceUrl: config.datasourceUrl })
 
-fastify.listen({ port: 3000 })
-  .then(() => console.log(`api server started on port ${apiPort}`))
+fastify.setValidatorCompiler(validatorCompiler)
+fastify.setSerializerCompiler(serializerCompiler)
+
+fastify.register(createReplyHandler())
+fastify.register(fastifyCookie, { hook: 'onRequest' })
+
+const userService = createUserService(db)
+const secretService = createSecretService(db)
+
+fastify.register(createUserRouter({ userService, secretService }))
+fastify.register(createSecretRouter({ userService, secretService }))
+fastify.register(createHealthRouter({ services: [userService, secretService] }))
+
+fastify.listen({ port: config.apiPort, host: '0.0.0.0' })
+  .then(() => console.log(`api server started on port ${config.apiPort}`))
   .catch(error => console.error('api server listen error', error))
