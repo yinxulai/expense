@@ -47,3 +47,20 @@ model Bill {
   deletedTime DateTime?
   signature   String // 整条数据的签名
 }
+
+model Package {
+  id          String   @id @default(uuid())
+  rule        Json
+  key         String
+  ruleEngine  String
+  createdTime DateTime @default(now())
+  updatedTime DateTime @default(now()) @updatedAt
+}
+
+model UserPackage {
+  id             String   @id @default(uuid())
+  userId         String
+  packageId      String
+  effectiveTime  DateTime
+  expirationTime DateTime
+}
