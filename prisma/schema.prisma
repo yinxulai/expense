@@ -13,20 +13,43 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model ChargeData {
+// 计费数据
+// 一般来自业务上报
+model ChargeEvent {
   id          String   @id @default(uuid())
   key         String
-  value       Int
+  amount      BigInt
   createdTime DateTime @default(now())
 }
 
+// 计费项
+// 管理员创建
 model ChargeProject {
   id          String    @id @default(uuid())
   key         String
-  price       Int
+  unitPrice   Int // 单位价格
+  unitAmount  Int // 单位数量
   createdTime DateTime  @default(now())
   updatedTime DateTime  @default(now()) @updatedAt
   deletedTime DateTime?
+}
+
+model Package {
+  id          String   @id @default(uuid())
+  key         String
+  effectRule  Json // 效果，再参与计费时执行
+  premiseRule Json // 前提，在用户订购时会执行
+  ruleEngine  String // 引擎版本，格式一般是 @engine-name/version
+  createdTime DateTime @default(now())
+  updatedTime DateTime @default(now()) @updatedAt
+}
+
+model PackageSubscribe {
+  id             String   @id @default(uuid())
+  userId         String
+  packageId      String
+  effectiveTime  DateTime
+  expirationTime DateTime
 }
 
 enum BillType {
@@ -34,33 +57,17 @@ enum BillType {
   RealTime // 实时账单
 }
 
-model Bill {
-  id         String   @id @default(uuid())
-  type       BillType
-  endTime    DateTime // 结束实现
-  startTime  DateTime // 开始时间
-  totalCost  Int // 总费用
-  actualCost Int // 实际费用（计算套餐和折扣之后）
+// 针对单个计费项的账单
+// Bill 指的是要求支付的费用清单，通常是在某一时间段内产生的费用
+model UnitBill {
+  id               String   @id @default(uuid())
+  type             BillType
+  endTime          DateTime // 结束时间
+  startTime        DateTime // 开始时间
+  totalCost        Int // 总费用
+  actualCost       Int // 实际费用（计算套餐和折扣之后）
+  calculationFlow  Json // 抵扣流程
+  chargeProjectKey String // 计费项
 
-  createdTime DateTime  @default(now())
-  updatedTime DateTime  @default(now()) @updatedAt
-  deletedTime DateTime?
-  signature   String // 整条数据的签名
-}
-
-model Package {
-  id          String   @id @default(uuid())
-  rule        Json
-  key         String
-  ruleEngine  String
   createdTime DateTime @default(now())
-  updatedTime DateTime @default(now()) @updatedAt
-}
-
-model UserPackage {
-  id             String   @id @default(uuid())
-  userId         String
-  packageId      String
-  effectiveTime  DateTime
-  expirationTime DateTime
 }
